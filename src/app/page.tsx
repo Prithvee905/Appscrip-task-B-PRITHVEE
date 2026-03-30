@@ -4,6 +4,9 @@ import ProductGrid from '@/components/ProductGrid';
 import Footer from '@/components/Footer';
 import { Product } from '@/types';
 
+// Force SSR for dynamic API data and handle build-time fetch quirks
+export const dynamic = 'force-dynamic';
+
 // SEO requirements
 export const metadata = {
   title: 'mettamuse | Discover Our Products',
@@ -11,12 +14,20 @@ export const metadata = {
   keywords: 'ecommerce, shop online, fashion, premium products, global shopping',
 };
 
-async function getProducts() {
-  const res = await fetch('https://fakestoreapi.com/products');
-  if (!res.ok) {
-    throw new Error('Failed to fetch data');
+async function getProducts(): Promise<Product[]> {
+  try {
+    const res = await fetch('https://fakestoreapi.com/products', {
+      next: { revalidate: 3600 } // Cache for 1 hour
+    });
+    if (!res.ok) {
+      console.error(`Fetch failed: ${res.status} ${res.statusText}`);
+      return [];
+    }
+    return res.json();
+  } catch (error) {
+    console.error('Fetching products failed:', error);
+    return [];
   }
-  return res.json();
 }
 
 export default async function Home() {
