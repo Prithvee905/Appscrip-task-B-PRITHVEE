@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { Search, Heart, ShoppingBag, User, Menu, X } from "lucide-react";
+import { Search, Heart, ShoppingBag, User, Menu } from "lucide-react";
 
 const NAV_LINKS = ["SHOP", "SKILLS", "STORIES", "ABOUT", "CONTACT US"];
 

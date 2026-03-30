@@ -26,7 +26,7 @@ export default function ProductGrid({ initialProducts }: ProductGridProps) {
 
   // Sorting Logic (bonus)
   const sortedProducts = useMemo(() => {
-    let sorted = [...initialProducts];
+    const sorted = [...initialProducts];
     switch (sortOption) {
       case 'price_high':
         return sorted.sort((a, b) => b.price - a.price);
