@@ -15,17 +15,31 @@ export const metadata = {
 };
 
 async function getProducts(): Promise<Product[]> {
+  const url = 'https://fakestoreapi.com/products';
   try {
-    const res = await fetch('https://fakestoreapi.com/products', {
-      next: { revalidate: 3600 } // Cache for 1 hour
+    const res = await fetch(url, {
+      cache: 'no-store', // Disable caching for initial debugging to see actual server fetch
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Vercel Build Environment)',
+        'Accept': 'application/json'
+      }
     });
+
     if (!res.ok) {
-      console.error(`Fetch failed: ${res.status} ${res.statusText}`);
+      const errorText = await res.text().catch(() => 'no body');
+      console.error(`Fetch to ${url} failed with status: ${res.status} ${res.statusText}. Body: ${errorText}`);
       return [];
     }
-    return res.json();
-  } catch (error) {
-    console.error('Fetching products failed:', error);
+
+    const data = await res.json();
+    if (!Array.isArray(data)) {
+      console.error(`Fetch to ${url} returned invalid data format: expected array, got ${typeof data}`);
+      return [];
+    }
+
+    return data;
+  } catch (error: any) {
+    console.error(`Fetching products from ${url} failed with error:`, error.message || error);
     return [];
   }
 }
